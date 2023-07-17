@@ -35,7 +35,47 @@ function updateProgress() {
   duration.textContent = calculateDisplayTimeFormat(video.duration);
 }
 
+function setProgress(e) {
+  const newTime = e.offsetX / progressRange.offsetWidth;
+  progressBar.style.width = `${newTime * 100}%`;
+  video.currentTime = newTime * video.duration;
+}
+
+let lastVolume = 1;
 // Volume Controls --------------------------- //
+function changeVolume(e) {
+  let volume = e.offsetX / volumeRange.offsetWidth;
+  volume = volume < 0.1 ? 0 : volume > 0.9 ? 1 : volume;
+  volumeBar.style.width = `${volume * 100}%`;
+  video.volume = volume;
+  let arr = ["fas"];
+  volume > 0.7
+    ? arr.push("fa-volume-up")
+    : volume < 0.7 && volume > 0
+    ? arr.push("fa-volume-down")
+    : volume == 0
+    ? arr.push("fa-volume-off")
+    : arr;
+  volumeIcon.className = `${arr[0]} ${arr[1]}`;
+  lastVolume = volume;
+}
+
+function toggleMute() {
+  volumeIcon.className = "";
+  if (video.volume) {
+    lastVolume = video.volume;
+    video.volume = 0;
+    volumeBar.style.width = 0;
+    volumeIcon.className = "";
+    volumeIcon.classList.add("fas", "fa-volume-mute");
+    volumeIcon.setAttribute("title", "Unmute");
+  } else {
+    video.volume = lastVolume;
+    volumeBar.style.width = `${lastVolume * 100}%`;
+    volumeIcon.classList.add("fas", "fa-volume-up");
+    volumeIcon.setAttribute("title", "mute");
+  }
+}
 
 // Change Playback Speed -------------------- //
 
@@ -43,6 +83,13 @@ function updateProgress() {
 
 playButton.addEventListener("click", playPauseVideo);
 video.addEventListener("click", playPauseVideo);
-video.addEventListener("ended", playPauseVideo);
+video.addEventListener("ended", () => {
+  video.pause();
+  playButton.classList.replace("fa-pause", "fa-play");
+  playButton.setAttribute("title", "Play");
+});
 video.addEventListener("canplay", updateProgress);
 video.addEventListener("timeupdate", updateProgress);
+progressRange.addEventListener("click", setProgress);
+volumeRange.addEventListener("click", changeVolume);
+volumeIcon.addEventListener("click", toggleMute);
