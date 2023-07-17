@@ -1,3 +1,4 @@
+const player = document.querySelector(".player");
 const video = document.querySelector("video");
 const progressRange = document.querySelector(".progress-range");
 const progressBar = document.querySelector(".progress-bar");
@@ -8,6 +9,7 @@ const volumeBar = document.querySelector(".volume-bar");
 const currentTime = document.querySelector(".time-elapsed");
 const duration = document.querySelector(".time-duration");
 const fullScreen = document.querySelector(".fullscreen");
+const playBack = document.querySelector("select");
 
 // Play & Pause ----------------------------------- //
 function playPauseVideo() {
@@ -78,8 +80,44 @@ function toggleMute() {
 }
 
 // Change Playback Speed -------------------- //
+function changePlaybackRate() {
+  video.playbackRate = playBack.value;
+}
 
 // Fullscreen ------------------------------- //
+let fullScreenFlag = false;
+
+function toggleFullScreen() {
+  fullScreenFlag ? closeFullscreen() : openFullscreen(player);
+  fullScreenFlag = !fullScreenFlag;
+}
+/* View in fullscreen */
+function openFullscreen(elem) {
+  video.classList.add("video-fullScreen");
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    /* IE11 */
+    elem.msRequestFullscreen();
+  }
+}
+
+/* Close fullscreen */
+function closeFullscreen() {
+  video.classList.remove("video-fullScreen");
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    /* Safari */
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    /* IE11 */
+    document.msExitFullscreen();
+  }
+}
 
 playButton.addEventListener("click", playPauseVideo);
 video.addEventListener("click", playPauseVideo);
@@ -93,3 +131,5 @@ video.addEventListener("timeupdate", updateProgress);
 progressRange.addEventListener("click", setProgress);
 volumeRange.addEventListener("click", changeVolume);
 volumeIcon.addEventListener("click", toggleMute);
+playBack.addEventListener("change", changePlaybackRate);
+fullScreen.addEventListener("click", toggleFullScreen);
